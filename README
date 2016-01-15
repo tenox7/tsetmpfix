@@ -1,0 +1,49 @@
+TSE TMP FIX v1.0 - Copyright (c) 1999 by Antoni Sawicki
+=======================================================
+
+Abstract
+========
+
+Windows NT 4.0 Terminal Server Edition has a serious reliability issue
+associated with how TEMP folder is handled in multi user sessions.
+
+By default TEMP folder has following structure:
+
+c:\TEMP\xx
+
+Where xx is a dynamicallly assigned user session number. Each user,
+or even multiple logins of the same user id will have different session
+numbers assigned in TEMP folder.
+
+Generaly this approach would be viable, if not the fact that quite
+often, during logoff procedure the system is unable to completely
+delete the folder. You can often see large amount of session specific
+temp subfolders left over in c:\TEMP directory.
+
+These abandoned temp folders pose a serious security and stability risk.
+For example if a user logs in and he or she gets assigned session id 42
+and c:\TEMP\42 already exists, the new user will run in to problems
+trying to access someone elses temporary files and folders. Quite often
+resulting in access denied or other errors. Microsoft Office applications
+are particularlly prone to temporary folder errors.
+
+Terminal Server Edition has been demend quite unstable and unreliable for
+these kinds of errors. It's believed that the TEMP folder is the main 
+contributing factor.
+
+This application implements a very simple work around by redirecting the
+TEMP folder to reside under user profile directory instead. For example:
+
+c:\wtsrv\profiles\johndoe\TEMP\47
+
+This way, even if the TEMP\47 will not be deleted by the particular user
+upon log off, at least he or she will have access credentials to manage
+the files inside and not get constant Access Denied messages.
+
+
+Usage Instructions
+==================
+
+1. Copy tsetmpfix.exe to c:\wtsrv\system32 directory.
+2. Edit UsrLogon.cmd file and add tsetmpfix in begining of the script.
+3. Let users log in and get the folders redirected to a new location.
